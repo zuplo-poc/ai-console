@@ -8,25 +8,14 @@ import {
 } from "@/lib/types";
 import { apiService } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { toast } from "sonner";
 import { CreateKeyDialog } from "@/components/create-key-dialog";
 import { ApplicationCard } from "@/components/application-card";
-import { AppWindowIcon, RefreshCwIcon } from "lucide-react";
+import { RefreshCwIcon } from "lucide-react";
 
 export default function Dashboard() {
   const [consumers, setConsumers] = useState<Consumer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedConsumer, setSelectedConsumer] = useState<Consumer | null>(
-    null
-  );
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const fetchConsumers = async () => {

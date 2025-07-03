@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,22 +32,32 @@ export default function RootLayout({
       >
         <div>
           <div className="border-b">
-            <div className="flex items-center justify-center h-10 py-6 gap-4 relative mx-auto max-w-screen-xl">
+            <div className="flex items-center justify-between h-10 py-6 gap-4 relative mx-auto max-w-(--breakpoint-xl)">
               <img
                 src="https://portal.zuplo.com/zuplo.svg"
                 alt="Zuplo Logo"
-                className="h-8 w-auto absolute left-0"
+                className="h-8 w-auto"
               />
               <div className="flex items-center gap-2">
-                <button className="text-[#FF00BD] p-1 px-2 rounded text-xs font-medium bg-[#FFE3FC]">
+                <button className="text-[#FF00BD] p-1 px-2 rounded text-sm font-medium bg-[#FFE3FC]">
                   Console
                 </button>
-                <button className="hover:text-[#FF00BD] p-1 px-2 rounded text-xs font-medium ">
+                <button className="hover:text-[#FF00BD] p-1 px-2 rounded text-sm font-medium ">
                   Services
                 </button>
-                <button className="hover:text-[#FF00BD] p-1 px-2 rounded text-xs font-medium ">
+                <button className="hover:text-[#FF00BD] p-1 px-2 rounded text-sm font-medium ">
                   Settings
                 </button>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">
+                  Josh Twist
+                </span>
+                <img
+                  src="https://zuplo.com/_next/static/media/josh.126da733.webp"
+                  alt="Profile"
+                  className="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
+                />
               </div>
             </div>
           </div>
