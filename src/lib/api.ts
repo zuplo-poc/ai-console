@@ -8,11 +8,6 @@
 
 import { Consumer } from "./types";
 
-// Environment variables and constants
-const API_BASE_URL = '/api/consumers';
-const DEFAULT_ACCOUNT = 'ai-gateway-prototype';
-const DEFAULT_BUCKET = 'zprj-jkbnlgztocnahrbabinyeact-production';
-
 export interface ApiKey {
   id: string;
   name: string;
@@ -88,7 +83,18 @@ export const apiService = {
     windowSize: string;
     startTime: string;
     endTime: string;
-    data: any;
+    data: {
+      data: Array<{
+        groupBy: { model: string };
+        value: number;
+        subject: string;
+        windowEnd: string;
+        windowStart: string;
+      }>;
+      from: string;
+      to: string;
+      windowSize: string;
+    };
   }> {
     try {
       const url = `/api/model-usage?subject=${encodeURIComponent(subject)}`;
@@ -191,35 +197,35 @@ export const apiService = {
     }
   },
 
-  async getKey(id: string): Promise<ApiKey> {
+  async getKey(): Promise<ApiKey> {
     // This method is kept for backward compatibility
     // but is not used in the consumer implementation
     console.warn('getKey is not implemented for consumers');
     return {} as ApiKey;
   },
 
-  async createKey(data: ApiKeyCreateRequest): Promise<ApiKey> {
+  async createKey(): Promise<ApiKey> {
     // This method is kept for backward compatibility
     // but is not used in the consumer implementation
     console.warn('createKey is not implemented for consumers');
     return {} as ApiKey;
   },
 
-  async updateKey(id: string, data: ApiKeyUpdateRequest): Promise<ApiKey> {
+  async updateKey(): Promise<ApiKey> {
     // This method is kept for backward compatibility
     // but is not used in the consumer implementation
     console.warn('updateKey is not implemented for consumers');
     return {} as ApiKey;
   },
 
-  async deleteKey(id: string): Promise<void> {
+  async deleteKey(): Promise<void> {
     // This method is kept for backward compatibility
     // but is not used in the consumer implementation
     console.warn('deleteKey is not implemented for consumers');
     return;
   },
 
-  async rollKey(id: string): Promise<ApiKey> {
+  async rollKey(): Promise<ApiKey> {
     // This method is kept for backward compatibility
     // but is not used in the consumer implementation
     console.warn('rollKey is not implemented for consumers');
@@ -232,25 +238,11 @@ export const apiService = {
     return this.getAllKeys();
   },
 
-  async getConsumer(id: string): Promise<Consumer> {
-    try {
-      const url = `${API_BASE_URL}/accounts/${DEFAULT_ACCOUNT}/key-buckets/${DEFAULT_BUCKET}/consumers/${id}`;
-      console.log('Fetching consumer from URL:', url);
-      
-      const options = {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      };
-      
-      const response = await fetch(url, options);
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching consumer:', error);
-      throw error;
-    }
+  async getConsumer(): Promise<Consumer> {
+    // This method is kept for backward compatibility
+    // but is not used in the consumer implementation
+    console.warn('getConsumer is not implemented for consumers');
+    return {} as Consumer;
   },
 
   async createConsumer(data: ConsumerCreateRequest): Promise<{ consumer: Consumer; apiKey?: string }> {

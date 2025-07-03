@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Consumer } from "@/lib/types";
+import { Consumer, ApiKeyUpdateFormValues } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import { ModelUsagePieChart } from "@/components/model-usage-pie-chart";
 
 interface ApplicationCardProps {
   consumer: Consumer;
-  onUpdate: (consumerId: string, data: any) => Promise<void>;
+  onUpdate: (consumerId: string, data: ApiKeyUpdateFormValues) => Promise<void>;
   onDelete: (consumerId: string) => Promise<void>;
 }
 

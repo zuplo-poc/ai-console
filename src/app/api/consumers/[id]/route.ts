@@ -7,11 +7,11 @@ const DEFAULT_BUCKET = process.env.ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnw
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get the consumer ID from the URL params - use context.params to avoid NextJS error
-    const consumerId = context.params.id;
+    // Get the consumer ID from the URL params
+    const { id: consumerId } = await params;
     
     // Parse the request body
     const requestBody = await request.json();
@@ -94,11 +94,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get the consumer ID from the URL params - use context.params to avoid NextJS error
-    const consumerId = context.params.id;
+    // Get the consumer ID from the URL params
+    const { id: consumerId } = await params;
     console.log(`API Route: Deleting consumer ${consumerId}`);
     
     // Get the API key from environment variables

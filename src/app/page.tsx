@@ -18,8 +18,6 @@ export default function Dashboard() {
   const [consumers, setConsumers] = useState<Consumer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [consumerToDelete, setConsumerToDelete] = useState<Consumer | null>(null);
   const [apiKeyToShow, setApiKeyToShow] = useState<string | null>(null);
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
 
