@@ -12,11 +12,16 @@ import { toast } from "sonner";
 import { CreateKeyDialog } from "@/components/create-key-dialog";
 import { ApplicationCard } from "@/components/application-card";
 import { RefreshCwIcon } from "lucide-react";
+import { ApiKeyDialog } from "@/components/api-key-dialog";
 
 export default function Dashboard() {
   const [consumers, setConsumers] = useState<Consumer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [consumerToDelete, setConsumerToDelete] = useState<Consumer | null>(null);
+  const [apiKeyToShow, setApiKeyToShow] = useState<string | null>(null);
+  const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
 
   const fetchConsumers = async () => {
     try {
@@ -48,11 +53,13 @@ export default function Dashboard() {
 
   const handleCreateKey = async (data: ApiKeyFormValues) => {
     try {
-      const newConsumer = await apiService.createConsumer({
+      console.log('Page: Creating consumer with data:', data);
+      
+      const result = await apiService.createConsumer({
         name: data.name,
         metadata: {
           limits: {
-            budget: 0.1, // Adding default budget
+            // Remove budget as it's not in the type definition
             tokens: data.tokens,
             requests: data.requestLimit,
             timeWindowMinutes: data.timeWindow
@@ -60,14 +67,58 @@ export default function Dashboard() {
               : undefined,
           },
           model: data.model, // Model field outside limits
+          budget: 0.1, // Move budget outside limits to match the expected type
         },
       });
-      setConsumers([...consumers, newConsumer]);
-      toast.success("Consumer created successfully");
+      
+      console.log('Page: Consumer creation result:', JSON.stringify(result, null, 2));
+      
+      // Add the new consumer to the list
+      setConsumers([...consumers, result.consumer]);
+      
+      // Close the create dialog
       setIsCreateDialogOpen(false);
+      
+      // Show success message
+      toast.success("Consumer created successfully");
+      
+      // Direct access to API key from the response structure
+      let apiKey = result.apiKey;
+      console.log('Page: Extracted API key:', apiKey);
+      
+      // If we don't have an API key, try to extract it from the consumer object
+      if (!apiKey) {
+        console.log('Page: No API key found in result.apiKey, checking consumer object');
+        
+        // Using type assertion to safely access potentially undefined properties
+        const rawConsumer = result.consumer as unknown as Record<string, unknown>;
+        
+        if (rawConsumer && 
+            typeof rawConsumer === 'object' && 
+            'apiKeys' in rawConsumer && 
+            Array.isArray(rawConsumer.apiKeys) && 
+            rawConsumer.apiKeys.length > 0 && 
+            rawConsumer.apiKeys[0] && 
+            typeof rawConsumer.apiKeys[0] === 'object' && 
+            'key' in rawConsumer.apiKeys[0]) {
+          
+          apiKey = rawConsumer.apiKeys[0].key as string;
+          console.log('Page: Found API key directly in consumer object:', apiKey);
+        }
+      }
+      
+      // If we have an API key (from either source), show it in the dialog
+      if (apiKey) {
+        console.log('Page: Opening API key dialog with key:', apiKey);
+        setApiKeyToShow(apiKey);
+        setIsApiKeyDialogOpen(true);
+      } else {
+        console.log('Page: No API key found in any location');
+        toast.error("API key was not returned from the server");
+      }
     } catch (error) {
+      console.error('Error creating consumer:', error);
       toast.error("Failed to create consumer");
-      console.error(error);
     }
   };
 
@@ -182,6 +233,12 @@ export default function Dashboard() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         onSubmit={handleCreateKey}
+      />
+      
+      <ApiKeyDialog
+        isOpen={isApiKeyDialogOpen}
+        onClose={() => setIsApiKeyDialogOpen(false)}
+        apiKey={apiKeyToShow}
       />
     </div>
   );

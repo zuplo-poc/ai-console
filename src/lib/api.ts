@@ -253,11 +253,10 @@ export const apiService = {
     }
   },
 
-  async createConsumer(data: ConsumerCreateRequest): Promise<Consumer> {
+  async createConsumer(data: ConsumerCreateRequest): Promise<{ consumer: Consumer; apiKey?: string }> {
     try {
       // Use our local API route instead of calling Zuplo API directly
       const url = '/api/consumers';
-      console.log('Creating consumer via local API route:', url);
       
       const options = {
         method: 'POST',
@@ -274,7 +273,24 @@ export const apiService = {
         throw new Error(`Failed to create consumer: ${response.status} ${response.statusText}\nDetails: ${errorText}`);
       }
       
-      return await response.json();
+      const responseData = await response.json();
+      
+      // Extract the API key from the response if it exists
+      // Based on the actual response structure we know the key is in apiKeys[0].key
+      let apiKey: string | undefined;
+      
+      if (responseData && 
+          responseData.apiKeys && 
+          Array.isArray(responseData.apiKeys) && 
+          responseData.apiKeys.length > 0 && 
+          responseData.apiKeys[0].key) {
+        apiKey = responseData.apiKeys[0].key;
+        console.log('API Service: Successfully extracted API key:', apiKey);
+      } else {
+        console.log('API Service: No API key found in response');
+      }
+      
+      return { consumer: responseData, apiKey };
     } catch (error) {
       console.error('Error creating consumer:', error);
       throw error;

@@ -130,6 +130,20 @@ export async function POST(request: NextRequest) {
     // Parse and return the response data
     const data = await response.json();
     console.log('API Route: Successfully created consumer');
+    
+    // Log the response data structure to see if it contains the API key
+    console.log('API Route: Consumer creation response structure:', JSON.stringify({
+      hasApiKeys: !!data.apiKeys,
+      apiKeysIsArray: Array.isArray(data.apiKeys),
+      apiKeysLength: data.apiKeys?.length || 0,
+      firstApiKey: data.apiKeys?.[0] ? JSON.stringify(data.apiKeys[0]) : 'No API keys'
+    }, null, 2));
+    
+    // If there are API keys, log the first one
+    if (data.apiKeys && Array.isArray(data.apiKeys) && data.apiKeys.length > 0) {
+      console.log('API Route: First API key:', JSON.stringify(data.apiKeys[0], null, 2));
+    }
+    
     return NextResponse.json(data);
   } catch (error) {
     console.error('API Route: Error creating consumer:', error);
