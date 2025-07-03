@@ -19,7 +19,7 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import { UsageChart } from "@/components/usage-chart";
-import { DonutChartHero } from "@/app/SampleDonut";
+import { ModelUsagePieChart } from "@/components/model-usage-pie-chart";
 
 interface ApplicationCardProps {
   consumer: Consumer;
@@ -125,9 +125,9 @@ export function ApplicationCard({
             </div>
 
             <div className="border rounded-md p-4">
-              <h3 className="text-sm font-medium mb-2">Tokens</h3>
+              <h3 className="text-sm font-medium mb-2">Token Usage by Model</h3>
               <div className="flex justify-center items-center h-full">
-                <DonutChartHero />
+                <ModelUsagePieChart subject={consumer.name} />
               </div>
             </div>
           </div>

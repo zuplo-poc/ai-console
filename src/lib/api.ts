@@ -81,6 +81,38 @@ export interface ConsumerUpdateRequest {
 
 // API functions
 export const apiService = {
+  // Fetch model usage data for a specific application
+  async getModelUsageData(subject: string): Promise<{
+    subject: string;
+    metric: string;
+    windowSize: string;
+    startTime: string;
+    endTime: string;
+    data: any;
+  }> {
+    try {
+      const url = `/api/model-usage?subject=${encodeURIComponent(subject)}`;
+      console.log('Fetching model usage data from:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching model usage data:', error);
+      throw error;
+    }
+  },
+
   // Fetch usage data for a specific application
   async getUsageData(subject: string, metric: string = 'tokens_total', timeRange: string = '30d', windowSize: string = 'DAY'): Promise<{
     subject: string;
