@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Environment variables
 const API_BASE_URL = 'https://dev.zuplo.com/v1';
-const API_KEY = process.env.ZUPLO_API_KEY || process.env.NEXT_PUBLIC_ZUPLO_API_KEY || '';
-const DEFAULT_ACCOUNT = process.env.NEXT_PUBLIC_ZUPLO_ACCOUNT || 'bronze_environmental_wren';
-const DEFAULT_BUCKET = process.env.NEXT_PUBLIC_ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnwi-working-copy';
+const API_KEY = process.env.ZUPLO_API_KEY || '';
+const DEFAULT_ACCOUNT = process.env.ZUPLO_ACCOUNT || 'bronze_environmental_wren';
+const DEFAULT_BUCKET = process.env.ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnwi-working-copy';
 
 export async function GET() {
   try {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     console.log('API Route: Creating consumer with data:', JSON.stringify(requestBody, null, 2));
     
     // Get the API key from environment variables
-    const apiKey = process.env.ZUPLO_API_KEY || process.env.NEXT_PUBLIC_ZUPLO_API_KEY;
+    const apiKey = process.env.ZUPLO_API_KEY;
     if (!apiKey) {
       console.error('API Route: Missing API key');
       return NextResponse.json(

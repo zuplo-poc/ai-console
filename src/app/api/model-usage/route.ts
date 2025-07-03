@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { OpenMeter } from '@openmeter/sdk';
 
 // Environment variables
-const OPENMETER_API_KEY = process.env.NEXT_PUBLIC_OPENMETER_API_KEY;
+const OPENMETER_API_KEY = process.env.OPENMETER_API_KEY;
 const OPENMETER_BASE_URL = 'https://openmeter.cloud';
 
 export async function GET(request: NextRequest) {

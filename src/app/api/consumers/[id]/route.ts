@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Environment variables
 const API_BASE_URL = 'https://dev.zuplo.com/v1';
-const DEFAULT_ACCOUNT = process.env.NEXT_PUBLIC_ZUPLO_ACCOUNT || 'bronze_environmental_wren';
-const DEFAULT_BUCKET = process.env.NEXT_PUBLIC_ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnwi-working-copy';
+const DEFAULT_ACCOUNT = process.env.ZUPLO_ACCOUNT || 'bronze_environmental_wren';
+const DEFAULT_BUCKET = process.env.ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnwi-working-copy';
 
 export async function PATCH(
   request: NextRequest,
@@ -18,7 +18,7 @@ export async function PATCH(
     console.log(`API Route: Updating consumer ${consumerId} with data:`, JSON.stringify(requestBody, null, 2));
     
     // Get the API key from environment variables
-    const apiKey = process.env.ZUPLO_API_KEY || process.env.NEXT_PUBLIC_ZUPLO_API_KEY;
+    const apiKey = process.env.ZUPLO_API_KEY;
     if (!apiKey) {
       console.error('API Route: Missing API key');
       return NextResponse.json(
@@ -102,7 +102,7 @@ export async function DELETE(
     console.log(`API Route: Deleting consumer ${consumerId}`);
     
     // Get the API key from environment variables
-    const apiKey = process.env.ZUPLO_API_KEY || process.env.NEXT_PUBLIC_ZUPLO_API_KEY;
+    const apiKey = process.env.ZUPLO_API_KEY;
     if (!apiKey) {
       console.error('API Route: Missing API key');
       return NextResponse.json(

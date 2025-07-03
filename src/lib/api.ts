@@ -10,8 +10,8 @@ import { Consumer } from "./types";
 
 // Environment variables and constants
 const API_BASE_URL = '/api/consumers';
-const DEFAULT_ACCOUNT = process.env.NEXT_PUBLIC_ZUPLO_ACCOUNT || 'bronze_environmental_wren';
-const DEFAULT_BUCKET = process.env.NEXT_PUBLIC_ZUPLO_BUCKET || 'zprj-3eldpquvji1nnfahppzlbnwi-working-copy';
+const DEFAULT_ACCOUNT = 'ai-gateway-prototype';
+const DEFAULT_BUCKET = 'zprj-jkbnlgztocnahrbabinyeact-production';
 
 export interface ApiKey {
   id: string;
