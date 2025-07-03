@@ -44,7 +44,8 @@ export async function PATCH(
           tokens: Number(requestBody.metadata?.limits?.tokens),
           requests: Number(requestBody.metadata?.limits?.requests),
           timeWindowMinutes: Number(requestBody.metadata?.limits?.timeWindowMinutes)
-        }
+        },
+        model: requestBody.metadata?.model || "gpt-4o"
       }
     };
     

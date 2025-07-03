@@ -33,10 +33,12 @@ export interface Consumer {
   };
   metadata?: {
     limits?: {
+      budget?: number;
       tokens?: number;
       requests?: number;
       timeWindowMinutes?: number;
     };
+    model?: string;
     rateLimit?: number;
     [key: string]: unknown;
   };
@@ -47,6 +49,7 @@ export interface ApiKeyFormValues {
   requestLimit?: number;
   tokens?: number;
   timeWindow?: string;
+  model?: string;
 }
 
 export interface ApiKeyUpdateFormValues {
@@ -54,6 +57,7 @@ export interface ApiKeyUpdateFormValues {
   requestLimit?: number;
   tokens?: number;
   timeWindow?: string;
+  model?: string;
 }
 
 export interface ConsumerFormValues {

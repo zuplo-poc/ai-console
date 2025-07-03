@@ -18,7 +18,7 @@ import {
   TrashIcon,
   TrendingUpIcon,
 } from "lucide-react";
-import { AreaChartHero as SampleChart } from "@/app/SampleChart";
+import { UsageChart } from "@/components/usage-chart";
 import { DonutChartHero } from "@/app/SampleDonut";
 
 interface ApplicationCardProps {
@@ -76,7 +76,14 @@ export function ApplicationCard({
                     <span className="text-sm font-medium flex items-center gap-2">
                       <CoinsIcon size={16} />
                       <div>
-                        Tokens {consumer.metadata?.limits?.tokens || 0} / day
+                        Tokens {consumer.metadata?.limits?.tokens || 0} / {consumer.metadata?.limits?.timeWindowMinutes || 1} min
+                      </div>
+                    </span>
+                  </li>
+                  <li className="flex items-center px-10">
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <div>
+                        Model: {consumer.metadata?.model || 0}
                       </div>
                     </span>
                   </li>
@@ -108,13 +115,13 @@ export function ApplicationCard({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-3 grid grid-cols-3 gap-4">
             <div className="border rounded-md p-4">
-              <h3 className="text-sm font-medium mb-2">Requests</h3>
-              <SampleChart />
+              <h3 className="text-sm font-medium mb-2">Tokens</h3>
+              <UsageChart subject={consumer.name} />
             </div>
 
             <div className="border rounded-md p-4">
               <h3 className="text-sm font-medium mb-2">$</h3>
-              <SampleChart />
+              <UsageChart subject={consumer.name} showAsCost={true} />
             </div>
 
             <div className="border rounded-md p-4">
@@ -138,6 +145,7 @@ export function ApplicationCard({
             consumer.metadata?.limits?.requests || consumer.metadata?.rateLimit,
           tokens: consumer.metadata?.limits?.tokens,
           timeWindow: consumer.metadata?.limits?.timeWindowMinutes?.toString(),
+          model: consumer.metadata?.model,
         }}
       />
 

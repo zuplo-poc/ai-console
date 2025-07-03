@@ -51,14 +51,41 @@ export async function GET(request: NextRequest) {
 
     console.log('API Route: Preparing to query OpenMeter');
     
-    // Just use the meters.list() method since it's working
-    console.log('API Route: Listing available meters');
+    // Query usage data for the specific meter and subject
+    console.log(`API Route: Querying usage data for meter 'tokens_total' and subject '${subject}'`);
     
-    // Get the list of available meters
-    const data = await openMeter.meters.list();
-    console.log('API Route: Successfully listed available meters');
-      
-    console.log(`API Route: Successfully retrieved data for subject '${subject}'`);
+    // Format dates as ISO strings
+    const fromDate = start.toISOString();
+    const toDate = end.toISOString();
+    
+    console.log(`API Route: Querying from ${fromDate} to ${toDate} for subject '${subject}'`);
+    
+    // Convert windowSize to a valid enum value
+    let validWindowSize: "MINUTE" | "HOUR" | "DAY" | "MONTH" = "HOUR";
+    
+    // Map the windowSize parameter to valid enum values
+    if (windowSize === "1h" || windowSize.toUpperCase() === "HOUR") {
+      validWindowSize = "HOUR";
+    } else if (windowSize === "1d" || windowSize.toUpperCase() === "DAY") {
+      validWindowSize = "DAY";
+    } else if (windowSize.toUpperCase() === "MINUTE") {
+      validWindowSize = "MINUTE";
+    } else if (windowSize.toUpperCase() === "MONTH") {
+      validWindowSize = "MONTH";
+    }
+    
+    // Query usage data for the specified meter using the proper method signature
+    const data = await openMeter.meters.query(
+      metric, // meterId or slug
+      {
+        from: fromDate,
+        to: toDate,
+        windowSize: validWindowSize,
+        subject: [subject] // Pass subject as an array as required by the API
+      }
+    );
+    
+    console.log(`API Route: Successfully retrieved usage data for subject '${subject}'`);
     
     // Log the structure of the response data for debugging
     console.log('API Route: Response data structure:', JSON.stringify({

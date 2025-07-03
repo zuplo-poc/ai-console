@@ -92,7 +92,8 @@ export async function POST(request: NextRequest) {
           tokens: Number(requestBody.metadata?.limits?.tokens) || 100,
           requests: Number(requestBody.metadata?.limits?.requests) || 10,
           timeWindowMinutes: Number(requestBody.metadata?.limits?.timeWindowMinutes) || 1
-        }
+        },
+        model: requestBody.metadata?.model || "gpt-4o"
       }
     };
     

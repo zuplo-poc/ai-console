@@ -52,12 +52,14 @@ export default function Dashboard() {
         name: data.name,
         metadata: {
           limits: {
+            budget: 0.1, // Adding default budget
             tokens: data.tokens,
             requests: data.requestLimit,
             timeWindowMinutes: data.timeWindow
               ? parseInt(data.timeWindow)
               : undefined,
           },
+          model: data.model, // Model field outside limits
         },
       });
       setConsumers([...consumers, newConsumer]);
@@ -84,10 +86,12 @@ export default function Dashboard() {
         name: data.name || consumerToUpdate.name,
         metadata: {
           limits: {
+            budget: 0.1, // Adding default budget
             tokens: Number(data.tokens),
             requests: Number(data.requestLimit),
             timeWindowMinutes: data.timeWindow ? Number(data.timeWindow) : 2, // Default to 2 minutes if not specified
           },
+          model: data.model, // Model field outside limits
         },
       };
 

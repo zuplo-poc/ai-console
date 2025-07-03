@@ -22,13 +22,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ApiKeyUpdateFormValues } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
   requestLimit: z.number().optional(),
   tokens: z.number().optional(),
-  timeWindow: z.string().optional()
+  timeWindow: z.string().optional(),
+  model: z.string().optional()
 });
 
 interface UpdateKeyDialogProps {
@@ -53,7 +61,7 @@ export function UpdateKeyDialog({
       requestLimit: undefined,
       tokens: undefined,
       timeWindow: "",
-
+      model: undefined
     },
   });
 
@@ -65,7 +73,7 @@ export function UpdateKeyDialog({
         requestLimit: defaultValues.requestLimit,
         tokens: defaultValues.tokens,
         timeWindow: defaultValues.timeWindow || "",
-
+        model: defaultValues.model
       });
     }
   }, [defaultValues, form]);
@@ -80,9 +88,9 @@ export function UpdateKeyDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Update API Key</DialogTitle>
+          <DialogTitle>Update Application</DialogTitle>
           <DialogDescription>
-            Update the API key settings.
+            Update the application settings.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -152,7 +160,30 @@ export function UpdateKeyDialog({
               )}
             />
             
-
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</SelectItem>
+                      <SelectItem value="gpt-4o">gpt-4o</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <DialogFooter>
               <Button type="submit">Update Key</Button>

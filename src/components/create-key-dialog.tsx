@@ -22,13 +22,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ApiKeyFormValues } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   requestLimit: z.number().optional(),
   tokens: z.number().optional(),
-  timeWindow: z.string().optional()
+  timeWindow: z.string().optional(),
+  model: z.string().optional()
 });
 
 interface CreateKeyDialogProps {
@@ -44,11 +52,10 @@ export function CreateKeyDialog({ open, onOpenChange, onSubmit }: CreateKeyDialo
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-
       requestLimit: undefined,
       tokens: undefined,
       timeWindow: "",
-
+      model: undefined
     },
   });
 
@@ -63,9 +70,9 @@ export function CreateKeyDialog({ open, onOpenChange, onSubmit }: CreateKeyDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New API Key</DialogTitle>
+          <DialogTitle>Create New Application</DialogTitle>
           <DialogDescription>
-            Create a new API key with optional rate limiting.
+            Create a new application with optional rate limiting.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -136,7 +143,30 @@ export function CreateKeyDialog({ open, onOpenChange, onSubmit }: CreateKeyDialo
               )}
             />
             
-
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</SelectItem>
+                      <SelectItem value="gpt-4o">gpt-4o</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <DialogFooter>
               <Button type="submit">Create Application</Button>

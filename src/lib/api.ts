@@ -81,6 +81,49 @@ export interface ConsumerUpdateRequest {
 
 // API functions
 export const apiService = {
+  // Fetch usage data for a specific application
+  async getUsageData(subject: string, metric: string = 'tokens_total', timeRange: string = '30d', windowSize: string = 'DAY'): Promise<{
+    subject: string;
+    metric: string;
+    windowSize: string;
+    timeRange: string;
+    startTime: string;
+    endTime: string;
+    data: {
+      data: Array<{
+        groupBy: Record<string, unknown>;
+        subject: string;
+        value: number;
+        windowEnd: string;
+        windowStart: string;
+      }>;
+      from: string;
+      to: string;
+      windowSize: string;
+    };
+  }> {
+    try {
+      const url = `/api/usage?subject=${encodeURIComponent(subject)}&metric=${encodeURIComponent(metric)}&timeRange=${encodeURIComponent(timeRange)}&windowSize=${encodeURIComponent(windowSize)}`;
+      console.log('Fetching usage data from:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching usage data:', error);
+      throw error;
+    }
+  },
   // Using the consumer listing endpoint via our Next.js API route to avoid CORS issues
   async getAllKeys(): Promise<Consumer[]> {
     try {

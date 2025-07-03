@@ -51,10 +51,10 @@ export default function RootLayout({
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-700">
-                  Josh Twist
+                  Peter Siki
                 </span>
                 <img
-                  src="https://zuplo.com/_next/static/media/josh.126da733.webp"
+                  src="https://cdn.zuplo.com/www/images/headshot-peter.jpg"
                   alt="Profile"
                   className="h-8 w-8 rounded-full object-cover border-2 border-gray-200"
                 />
