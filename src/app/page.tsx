@@ -1,37 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Consumer, ApiKeyFormValues, ApiKeyUpdateFormValues } from "@/lib/types";
+import {
+  Consumer,
+  ApiKeyFormValues,
+  ApiKeyUpdateFormValues,
+} from "@/lib/types";
 import { apiService } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { CreateKeyDialog } from "@/components/create-key-dialog";
 import { ApplicationCard } from "@/components/application-card";
+import { AppWindowIcon, RefreshCwIcon } from "lucide-react";
 
 export default function Dashboard() {
   const [consumers, setConsumers] = useState<Consumer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedConsumer, setSelectedConsumer] = useState<Consumer | null>(null);
+  const [selectedConsumer, setSelectedConsumer] = useState<Consumer | null>(
+    null
+  );
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const fetchConsumers = async () => {
     try {
       setLoading(true);
       const data = await apiService.getAllKeys();
-      
+
       // Check if data is an array (our service should return an array)
       if (Array.isArray(data)) {
         setConsumers(data);
       } else {
-        console.error('Unexpected API response format:', data);
-        toast.error('Unexpected API response format');
+        console.error("Unexpected API response format:", data);
+        toast.error("Unexpected API response format");
         setConsumers([]);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       toast.error(`Failed to fetch consumers: ${errorMessage}`);
-      console.error('Error fetching consumers:', error);
+      console.error("Error fetching consumers:", error);
       setConsumers([]);
     } finally {
       setLoading(false);
@@ -50,9 +65,11 @@ export default function Dashboard() {
           limits: {
             tokens: data.tokens,
             requests: data.requestLimit,
-            timeWindowMinutes: data.timeWindow ? parseInt(data.timeWindow) : undefined
-          }
-        }
+            timeWindowMinutes: data.timeWindow
+              ? parseInt(data.timeWindow)
+              : undefined,
+          },
+        },
       });
       setConsumers([...consumers, newConsumer]);
       toast.success("Consumer created successfully");
@@ -63,12 +80,15 @@ export default function Dashboard() {
     }
   };
 
-  const handleUpdateKey = async (consumerId: string, data: ApiKeyUpdateFormValues) => {
+  const handleUpdateKey = async (
+    consumerId: string,
+    data: ApiKeyUpdateFormValues
+  ) => {
     try {
       // Find the consumer to update
-      const consumerToUpdate = consumers.find(c => c.id === consumerId);
+      const consumerToUpdate = consumers.find((c) => c.id === consumerId);
       if (!consumerToUpdate) return;
-      
+
       // Format the data exactly as expected by the API
       const updateData = {
         // Include the name field to preserve it in the PATCH request
@@ -77,16 +97,26 @@ export default function Dashboard() {
           limits: {
             tokens: Number(data.tokens),
             requests: Number(data.requestLimit),
-            timeWindowMinutes: data.timeWindow ? Number(data.timeWindow) : 2 // Default to 2 minutes if not specified
-          }
-        }
+            timeWindowMinutes: data.timeWindow ? Number(data.timeWindow) : 2, // Default to 2 minutes if not specified
+          },
+        },
       };
-      
-      console.log('Sending update with data:', JSON.stringify(updateData, null, 2));
-      
-      const updatedConsumer = await apiService.updateConsumer(consumerId, updateData);
-      
-      setConsumers(consumers.map(consumer => consumer.id === updatedConsumer.id ? updatedConsumer : consumer));
+
+      console.log(
+        "Sending update with data:",
+        JSON.stringify(updateData, null, 2)
+      );
+
+      const updatedConsumer = await apiService.updateConsumer(
+        consumerId,
+        updateData
+      );
+
+      setConsumers(
+        consumers.map((consumer) =>
+          consumer.id === updatedConsumer.id ? updatedConsumer : consumer
+        )
+      );
       toast.success("Consumer updated successfully");
     } catch (error) {
       toast.error("Failed to update consumer");
@@ -97,12 +127,12 @@ export default function Dashboard() {
   const handleDeleteKey = async (consumerId: string) => {
     try {
       // Find the consumer to delete
-      const consumerToDelete = consumers.find(c => c.id === consumerId);
+      const consumerToDelete = consumers.find((c) => c.id === consumerId);
       if (!consumerToDelete) return;
-      
+
       // Pass both the ID and name to the deleteConsumer method
       await apiService.deleteConsumer(consumerId, consumerToDelete.name);
-      setConsumers(consumers.filter(consumer => consumer.id !== consumerId));
+      setConsumers(consumers.filter((consumer) => consumer.id !== consumerId));
       toast.success("Consumer deleted successfully");
     } catch (error) {
       toast.error("Failed to delete consumer");
@@ -112,49 +142,53 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto py-10">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Zuplo AI Console</CardTitle>
-          <CardDescription>
-            Manage your applications, set rate limits, and control access to APIs.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-end mb-4">
-            <Button onClick={() => setIsCreateDialogOpen(true)}>Create New Application</Button>
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 className="text-2xl font-bold">Zuplo AI Console</h1>
+          <p className="text-sm text-muted-foreground">
+            Mange your applications, set rate limits and control access to APIs.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchConsumers}>
+              <RefreshCwIcon size={16} />
+              Refresh
+            </Button>
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              Create Application
+            </Button>
           </div>
-          
-          {loading ? (
-            <div className="text-center py-10">
-              <p>Loading applications...</p>
-            </div>
-          ) : consumers.length === 0 ? (
-            <div className="text-center py-10 border rounded-md">
-              <p className="text-muted-foreground">No applications found. Create your first application to get started.</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {consumers.map((consumer) => (
-                <ApplicationCard 
-                  key={consumer.id} 
-                  consumer={consumer} 
-                  onUpdate={handleUpdateKey}
-                  onDelete={handleDeleteKey}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <p className="text-sm text-muted-foreground">{consumers.length} applications found</p>
-          <Button variant="outline" onClick={fetchConsumers}>Refresh</Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
 
-      <CreateKeyDialog 
-        open={isCreateDialogOpen} 
-        onOpenChange={setIsCreateDialogOpen} 
-        onSubmit={handleCreateKey} 
+      {loading ? (
+        <div className="text-center py-10">
+          <p>Loading applications...</p>
+        </div>
+      ) : consumers.length === 0 ? (
+        <div className="text-center py-10 border rounded-md">
+          <p className="text-muted-foreground">
+            No applications found. Create your first application to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {consumers.map((consumer) => (
+            <ApplicationCard
+              key={consumer.id}
+              consumer={consumer}
+              onUpdate={handleUpdateKey}
+              onDelete={handleDeleteKey}
+            />
+          ))}
+        </div>
+      )}
+
+      <CreateKeyDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onSubmit={handleCreateKey}
       />
     </div>
   );
