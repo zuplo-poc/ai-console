@@ -77,7 +77,7 @@ export interface ConsumerUpdateRequest {
 // API functions
 export const apiService = {
   // Fetch model usage data for a specific application
-  async getModelUsageData(subject: string): Promise<{
+  async getModelUsageData(subject: string, timeRange: string = '30d'): Promise<{
     subject: string;
     metric: string;
     windowSize: string;
@@ -97,7 +97,7 @@ export const apiService = {
     };
   }> {
     try {
-      const url = `/api/model-usage?subject=${encodeURIComponent(subject)}`;
+      const url = `/api/model-usage?subject=${encodeURIComponent(subject)}&timeRange=${encodeURIComponent(timeRange)}`;
       console.log('Fetching model usage data from:', url);
       
       const response = await fetch(url, {
