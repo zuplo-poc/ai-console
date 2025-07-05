@@ -30,10 +30,10 @@ export function DeleteKeyDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
-            Delete API Key
+            Delete Application
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the API key &ldquo;{keyName}&rdquo;? This action cannot be undone.
+            Are you sure you want to delete the Application &ldquo;{keyName}&rdquo;? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:justify-end">

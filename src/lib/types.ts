@@ -50,6 +50,7 @@ export interface ApiKeyFormValues {
   tokens?: number;
   timeWindow?: string;
   model?: string;
+  moneyLimit?: number;
 }
 
 export interface ApiKeyUpdateFormValues {
@@ -58,6 +59,7 @@ export interface ApiKeyUpdateFormValues {
   tokens?: number;
   timeWindow?: string;
   model?: string;
+  moneyLimit?: number;
 }
 
 export interface ConsumerFormValues {

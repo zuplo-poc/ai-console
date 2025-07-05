@@ -1,71 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Consumer,
   ApiKeyFormValues,
   ApiKeyUpdateFormValues,
 } from "@/lib/types";
-import { apiService } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { CreateKeyDialog } from "@/components/create-key-dialog";
 import { ApplicationCard } from "@/components/application-card";
 import { RefreshCwIcon } from "lucide-react";
 import { ApiKeyDialog } from "@/components/api-key-dialog";
+import { useConsumers, useCreateConsumer, useUpdateConsumer, useDeleteConsumer } from "@/hooks/use-consumers";
 
 export default function Dashboard() {
-  const [consumers, setConsumers] = useState<Consumer[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [apiKeyToShow, setApiKeyToShow] = useState<string | null>(null);
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
 
-  const fetchConsumers = async () => {
-    try {
-      setLoading(true);
-      const data = await apiService.getAllKeys();
+  // React Query hooks
+  const { data: consumers = [], isLoading, isFetching, refetch } = useConsumers();
+  const createConsumerMutation = useCreateConsumer();
+  const updateConsumerMutation = useUpdateConsumer();
+  const deleteConsumerMutation = useDeleteConsumer();
 
-      // Check if data is an array (our service should return an array)
-      if (Array.isArray(data)) {
-        setConsumers(data);
-      } else {
-        console.error("Unexpected API response format:", data);
-        toast.error("Unexpected API response format");
-        setConsumers([]);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Failed to fetch consumers: ${errorMessage}`);
-      console.error("Error fetching consumers:", error);
-      setConsumers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Debug window focus events
   useEffect(() => {
-    fetchConsumers();
+    const handleFocus = () => {
+      console.log('Window focused - should trigger refetch');
+    };
+
+    const handleVisibilityChange = () => {
+      console.log('Visibility changed:', document.visibilityState);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const handleCreateKey = async (data: ApiKeyFormValues) => {
     try {
       console.log("Page: Creating consumer with data:", data);
 
-      const result = await apiService.createConsumer({
+      const result = await createConsumerMutation.mutateAsync({
         name: data.name,
         metadata: {
           limits: {
-            // Remove budget as it's not in the type definition
             tokens: data.tokens,
             requests: data.requestLimit,
             timeWindowMinutes: data.timeWindow
               ? parseInt(data.timeWindow)
               : undefined,
           },
-          model: data.model, // Model field outside limits
-          budget: 0.1, // Move budget outside limits to match the expected type
+          model: data.model,
+          budget: data.moneyLimit ? data.moneyLimit / 1000 : 0.1,
         },
       });
 
@@ -74,14 +66,8 @@ export default function Dashboard() {
         JSON.stringify(result, null, 2)
       );
 
-      // Add the new consumer to the list
-      setConsumers([...consumers, result.consumer]);
-
       // Close the create dialog
       setIsCreateDialogOpen(false);
-
-      // Show success message
-      toast.success("Consumer created successfully");
 
       // Direct access to API key from the response structure
       let apiKey = result.apiKey;
@@ -124,11 +110,9 @@ export default function Dashboard() {
         setIsApiKeyDialogOpen(true);
       } else {
         console.log("Page: No API key found in any location");
-        toast.error("API key was not returned from the server");
       }
     } catch (error) {
       console.error("Error creating consumer:", error);
-      toast.error("Failed to create consumer");
     }
   };
 
@@ -143,16 +127,15 @@ export default function Dashboard() {
 
       // Format the data exactly as expected by the API
       const updateData = {
-        // Include the name field to preserve it in the PATCH request
         name: data.name || consumerToUpdate.name,
         metadata: {
           limits: {
-            budget: 0.1, // Adding default budget
+            budget: data.moneyLimit ? data.moneyLimit / 1000 : 0.1,
             tokens: Number(data.tokens),
             requests: Number(data.requestLimit),
-            timeWindowMinutes: data.timeWindow ? Number(data.timeWindow) : 2, // Default to 2 minutes if not specified
+            timeWindowMinutes: data.timeWindow ? Number(data.timeWindow) : 2,
           },
-          model: data.model, // Model field outside limits
+          model: data.model,
         },
       };
 
@@ -161,19 +144,11 @@ export default function Dashboard() {
         JSON.stringify(updateData, null, 2)
       );
 
-      const updatedConsumer = await apiService.updateConsumer(
-        consumerId,
-        updateData
-      );
-
-      setConsumers(
-        consumers.map((consumer) =>
-          consumer.id === updatedConsumer.id ? updatedConsumer : consumer
-        )
-      );
-      toast.success("Consumer updated successfully");
+      await updateConsumerMutation.mutateAsync({
+        id: consumerId,
+        data: updateData,
+      });
     } catch (error) {
-      toast.error("Failed to update consumer");
       console.error(error);
     }
   };
@@ -184,12 +159,11 @@ export default function Dashboard() {
       const consumerToDelete = consumers.find((c) => c.id === consumerId);
       if (!consumerToDelete) return;
 
-      // Pass both the ID and name to the deleteConsumer method
-      await apiService.deleteConsumer(consumerId, consumerToDelete.name);
-      setConsumers(consumers.filter((consumer) => consumer.id !== consumerId));
-      toast.success("Consumer deleted successfully");
+      await deleteConsumerMutation.mutateAsync({
+        id: consumerId,
+        name: consumerToDelete.name,
+      });
     } catch (error) {
-      toast.error("Failed to delete consumer");
       console.error(error);
     }
   };
@@ -205,8 +179,8 @@ export default function Dashboard() {
         </div>
         <div className="md:mt-0 mt-4 flex justify-end">
           <div className="flex gap-2">
-            <Button variant="outline" onClick={fetchConsumers}>
-              <RefreshCwIcon size={16} />
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCwIcon size={16} className={isFetching ? "animate-spin" : ""} />
               Refresh
             </Button>
             <Button onClick={() => setIsCreateDialogOpen(true)}>
@@ -216,7 +190,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="text-center py-10">
           <p>Loading applications...</p>
         </div>
