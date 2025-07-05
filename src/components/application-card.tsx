@@ -17,9 +17,11 @@ import {
   SquarePenIcon,
   TrashIcon,
   TrendingUpIcon,
+  DollarSignIcon,
 } from "lucide-react";
 import { UsageChart } from "@/components/usage-chart";
 import { ModelUsagePieChart } from "@/components/model-usage-pie-chart";
+import { formatTimeWindow } from "@/lib/utils";
 
 interface ApplicationCardProps {
   consumer: Consumer;
@@ -68,7 +70,7 @@ export function ApplicationCard({
                       Requests
                       <div>
                         {consumer.metadata?.limits?.requests || 0} /{" "}
-                        {consumer.metadata?.limits?.timeWindowMinutes || 1} min
+                        {formatTimeWindow(consumer.metadata?.limits?.timeWindowMinutes || 1)}
                       </div>
                     </span>
                   </li>
@@ -76,7 +78,15 @@ export function ApplicationCard({
                     <span className="text-sm font-medium flex items-center gap-2">
                       <CoinsIcon size={16} />
                       <div>
-                        Tokens {consumer.metadata?.limits?.tokens || 0} / {consumer.metadata?.limits?.timeWindowMinutes || 1} min
+                        Tokens {consumer.metadata?.limits?.tokens || 0} / {formatTimeWindow(consumer.metadata?.limits?.timeWindowMinutes || 1)}
+                      </div>
+                    </span>
+                  </li>
+                  <li className="flex items-center px-10">
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <DollarSignIcon size={16} />
+                      <div>
+                        Budget ${(consumer.metadata?.limits?.budget || 0) * 1000} / {formatTimeWindow(consumer.metadata?.limits?.timeWindowMinutes || 1)}
                       </div>
                     </span>
                   </li>
@@ -146,6 +156,7 @@ export function ApplicationCard({
           tokens: consumer.metadata?.limits?.tokens,
           timeWindow: consumer.metadata?.limits?.timeWindowMinutes?.toString(),
           model: consumer.metadata?.model,
+          moneyLimit: consumer.metadata?.limits?.budget ? consumer.metadata.limits.budget * 1000 : 1000,
         }}
       />
 

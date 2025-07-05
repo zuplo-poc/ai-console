@@ -27,7 +27,14 @@ export async function GET() {
       console.error('API Route: Error response status:', response.status);
       return NextResponse.json(
         { error: `Failed to fetch consumers: ${response.statusText}` },
-        { status: response.status }
+        { 
+          status: response.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
     
@@ -48,12 +55,25 @@ export async function GET() {
     }
     
     // Return the data as-is to the client
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   } catch (error) {
     console.error('API Route: Error fetching consumers:', error);
     return NextResponse.json(
       { error: 'Failed to fetch consumers' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
     );
   }
 }
@@ -70,7 +90,14 @@ export async function POST(request: NextRequest) {
       console.error('API Route: Missing API key');
       return NextResponse.json(
         { error: 'API key is not configured' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
     
@@ -91,7 +118,8 @@ export async function POST(request: NextRequest) {
         limits: {
           tokens: Number(requestBody.metadata?.limits?.tokens) || 100,
           requests: Number(requestBody.metadata?.limits?.requests) || 10,
-          timeWindowMinutes: Number(requestBody.metadata?.limits?.timeWindowMinutes) || 1
+          timeWindowMinutes: Number(requestBody.metadata?.limits?.timeWindowMinutes) || 1,
+          budget: Number(requestBody.metadata?.budget) || 0.1
         },
         model: requestBody.metadata?.model || "gpt-4o"
       }
@@ -123,7 +151,14 @@ export async function POST(request: NextRequest) {
       console.error('API Route: Error response:', errorText);
       return NextResponse.json(
         { error: `Failed to create consumer: ${response.status} ${response.statusText}`, details: errorText },
-        { status: response.status }
+        { 
+          status: response.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
     
@@ -144,12 +179,36 @@ export async function POST(request: NextRequest) {
       console.log('API Route: First API key:', JSON.stringify(data.apiKeys[0], null, 2));
     }
     
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   } catch (error) {
     console.error('API Route: Error creating consumer:', error);
     return NextResponse.json(
       { error: 'Failed to create consumer', message: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

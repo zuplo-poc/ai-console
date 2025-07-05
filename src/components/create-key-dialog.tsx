@@ -36,7 +36,8 @@ const formSchema = z.object({
   requestLimit: z.number().optional(),
   tokens: z.number().optional(),
   timeWindow: z.string().optional(),
-  model: z.string().optional()
+  model: z.string().optional(),
+  moneyLimit: z.number().optional()
 });
 
 interface CreateKeyDialogProps {
@@ -52,10 +53,11 @@ export function CreateKeyDialog({ open, onOpenChange, onSubmit }: CreateKeyDialo
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      requestLimit: undefined,
-      tokens: undefined,
-      timeWindow: "",
-      model: undefined
+      requestLimit: 100,
+      tokens: 1000,
+      timeWindow: "1440",
+      model: "gpt-4o",
+      moneyLimit: 1000
     },
   });
 
@@ -129,6 +131,27 @@ export function CreateKeyDialog({ open, onOpenChange, onSubmit }: CreateKeyDialo
                 </FormItem>
               )}
             />
+            
+            <FormField
+              control={form.control}
+              name="moneyLimit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Money Limit ($)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="1000" 
+                      {...field} 
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <FormField
               control={form.control}
               name="timeWindow"
