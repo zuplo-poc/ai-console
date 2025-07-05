@@ -51,8 +51,8 @@ export default function Dashboard() {
 
   const handleCreateKey = async (data: ApiKeyFormValues) => {
     try {
-      console.log('Page: Creating consumer with data:', data);
-      
+      console.log("Page: Creating consumer with data:", data);
+
       const result = await apiService.createConsumer({
         name: data.name,
         metadata: {
@@ -68,54 +68,66 @@ export default function Dashboard() {
           budget: 0.1, // Move budget outside limits to match the expected type
         },
       });
-      
-      console.log('Page: Consumer creation result:', JSON.stringify(result, null, 2));
-      
+
+      console.log(
+        "Page: Consumer creation result:",
+        JSON.stringify(result, null, 2)
+      );
+
       // Add the new consumer to the list
       setConsumers([...consumers, result.consumer]);
-      
+
       // Close the create dialog
       setIsCreateDialogOpen(false);
-      
+
       // Show success message
       toast.success("Consumer created successfully");
-      
+
       // Direct access to API key from the response structure
       let apiKey = result.apiKey;
-      console.log('Page: Extracted API key:', apiKey);
-      
+      console.log("Page: Extracted API key:", apiKey);
+
       // If we don't have an API key, try to extract it from the consumer object
       if (!apiKey) {
-        console.log('Page: No API key found in result.apiKey, checking consumer object');
-        
+        console.log(
+          "Page: No API key found in result.apiKey, checking consumer object"
+        );
+
         // Using type assertion to safely access potentially undefined properties
-        const rawConsumer = result.consumer as unknown as Record<string, unknown>;
-        
-        if (rawConsumer && 
-            typeof rawConsumer === 'object' && 
-            'apiKeys' in rawConsumer && 
-            Array.isArray(rawConsumer.apiKeys) && 
-            rawConsumer.apiKeys.length > 0 && 
-            rawConsumer.apiKeys[0] && 
-            typeof rawConsumer.apiKeys[0] === 'object' && 
-            'key' in rawConsumer.apiKeys[0]) {
-          
+        const rawConsumer = result.consumer as unknown as Record<
+          string,
+          unknown
+        >;
+
+        if (
+          rawConsumer &&
+          typeof rawConsumer === "object" &&
+          "apiKeys" in rawConsumer &&
+          Array.isArray(rawConsumer.apiKeys) &&
+          rawConsumer.apiKeys.length > 0 &&
+          rawConsumer.apiKeys[0] &&
+          typeof rawConsumer.apiKeys[0] === "object" &&
+          "key" in rawConsumer.apiKeys[0]
+        ) {
           apiKey = rawConsumer.apiKeys[0].key as string;
-          console.log('Page: Found API key directly in consumer object:', apiKey);
+          console.log(
+            "Page: Found API key directly in consumer object:",
+            apiKey
+          );
         }
       }
-      
+
       // If we have an API key (from either source), show it in the dialog
       if (apiKey) {
-        console.log('Page: Opening API key dialog with key:', apiKey);
+        console.log("Page: Opening API key dialog with key:", apiKey);
         setApiKeyToShow(apiKey);
         setIsApiKeyDialogOpen(true);
       } else {
-        console.log('Page: No API key found in any location');
+        console.log("Page: No API key found in any location");
         toast.error("API key was not returned from the server");
       }
     } catch (error) {
-      console.error('Error creating consumer:', error);
+      console.error("Error creating consumer:", error);
       toast.error("Failed to create consumer");
     }
   };
@@ -183,15 +195,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-10">
+    <div className="container mx-auto py-10 px-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10">
         <div>
           <h1 className="text-2xl font-bold">Zuplo AI Console</h1>
           <p className="text-sm text-muted-foreground">
             Mange your applications, set rate limits and control access to APIs.
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="md:mt-0 mt-4 flex justify-end">
           <div className="flex gap-2">
             <Button variant="outline" onClick={fetchConsumers}>
               <RefreshCwIcon size={16} />
@@ -232,7 +244,7 @@ export default function Dashboard() {
         onOpenChange={setIsCreateDialogOpen}
         onSubmit={handleCreateKey}
       />
-      
+
       <ApiKeyDialog
         isOpen={isApiKeyDialogOpen}
         onClose={() => setIsApiKeyDialogOpen(false)}

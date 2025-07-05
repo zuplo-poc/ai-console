@@ -31,9 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div>
+        <div className="h-screen flex flex-col">
           <div className="border-b">
-            <div className="flex items-center justify-between h-10 py-6 gap-4 relative mx-auto max-w-(--breakpoint-xl)">
+            <div className="flex items-center justify-between h-10 py-6 gap-4 relative mx-auto container px-4">
               <Image
                 src="https://portal.zuplo.com/zuplo.svg"
                 alt="Zuplo Logo"
@@ -66,7 +66,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-          <div className="bg-neutral-100">{children}</div>
+          <div className="bg-neutral-100 h-full">{children}</div>
         </div>
       </body>
     </html>
